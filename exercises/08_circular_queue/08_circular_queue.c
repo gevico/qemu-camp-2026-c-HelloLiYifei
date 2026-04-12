@@ -24,22 +24,31 @@ void InitQueue(Queue* q) {
 }
 
 int outPeople(Queue* q, int out) {
-    int id = q->data[out];
-    q->data[out] = -1;
-    q->count = 0;
+    int id = q->data[out].id;
+    q->data[out].id = -1;
+    q->count--;
     return id;
 }
 
 void circular(Queue* q) {
-    for (int i = 0; i < 50; i++) {
-        int j = 0;
-        while (q->count < 5) {
-            ++j %= 50;
-            if (q->data[j] != -1) {
-                q->count ++;
+    int j = 0;
+    while (q->count > 1) {
+        int count_steps = 0;
+        // 数5个人
+        while (count_steps < 5) {
+            if (q->data[j].id != -1) {
+                count_steps++;
+            }
+            if (count_steps < 5) {
+                j = (j + 1) % 50;
             }
         }
-        printf("%d ", outPeople(q, j));
+        printf("淘汰: %d\n", outPeople(q, j));
+        // 移动到下一个人
+        j = (j + 1) % 50;
+        while (q->data[j].id == -1 && q->count > 0) {
+            j = (j + 1) % 50;
+        }
     }
 }
 
@@ -52,7 +61,12 @@ int main() {
     InitQueue(&q);
     circular(&q);
     
-    printf("最后剩下的人是: %d\n", q.data[q.head].id);
+    for (int i = 0; i < MAX_PEOPLE; i++) {
+        if (q.data[i].id != -1) {
+            printf("最后剩下的人是: %d\n", q.data[i].id);
+            break;
+        }
+    }
 
     return 0;
 }
