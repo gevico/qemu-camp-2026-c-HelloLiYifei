@@ -24,7 +24,35 @@ char to_lower(char c) { return tolower(c); }
 // 添加单词到哈希表
 void add_word(WordCount **hash_table, const char *word) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    int h = hash(word);
+    if (hash_table[h] == NULL) {
+        hash_table[h] = malloc(sizeof(WordCount));
+        strncpy(hash_table[h]->word, word, MAX_WORD_LEN - 1);
+        hash_table[h]->word[MAX_WORD_LEN - 1] = '\0';  // 确保字符串以null结尾
+        hash_table[h]->count = 1;
+        hash_table[h]->next = NULL;  // 初始化next指针
+    } else if (strcmp(hash_table[h]->word, word) == 0) {
+        hash_table[h]->count++;
+    } else {
+        WordCount *current = hash_table[h];
+        WordCount *prev = NULL;
+
+        while (current != NULL && strcmp(current->word, word) != 0) {
+            prev = current;
+            current = current->next;
+        }
+        
+        if (current != NULL && strcmp(current->word, word) == 0) {
+            current->count++;
+        } else {
+            WordCount *new_node = malloc(sizeof(WordCount));
+            strncpy(new_node->word, word, MAX_WORD_LEN - 1);
+            new_node->word[MAX_WORD_LEN - 1] = '\0';
+            new_node->count = 1;
+            new_node->next = hash_table[h];
+            hash_table[h] = new_node;
+        }
+    }
 }
 
 // 打印单词统计结果
@@ -33,13 +61,27 @@ void print_word_counts(WordCount **hash_table) {
   printf("======================\n");
 
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    for (int i = 0; i < HASH_SIZE; i++) {
+        WordCount *current = hash_table[i];
+        while (current != NULL) {
+            printf("%-20s %d\n", current->word, current->count); 
+            current = current->next;
+        }
+    }
 }
 
 // 释放哈希表内存
 void free_hash_table(WordCount **hash_table) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    for (int i = 0; i < HASH_SIZE; i++) {
+        WordCount *current = hash_table[i];
+        while (current != NULL) {
+            WordCount *temp = current;
+            current = current->next;
+            free(temp);
+        }
+    }
+    free(hash_table);
 }
 
 // 处理文件并统计单词
@@ -69,7 +111,6 @@ void process_file(const char *filename) {
     }
   }
 
-  // 处理文件末尾的最后一个单词
   if (word_pos > 0) {
     word[word_pos] = '\0';
     add_word(hash_table, word);

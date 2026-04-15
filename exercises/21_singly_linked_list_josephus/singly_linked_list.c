@@ -9,7 +9,10 @@ static link head = NULL;
 // 创建新节点
 link make_node(unsigned char item) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    struct node *N = (struct node*)malloc(sizeof(struct node));
+    N->item = item;
+    N->next = NULL;
+    return N;
 }
 
 // 释放节点
@@ -18,47 +21,85 @@ void free_node(link p) { free(p); }
 // 查找节点
 link search(unsigned char key) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    struct node *p = head;
+    while (p != NULL) {
+        if (p->item == key) {
+            return p;
+        }
+        p = p->next;
+    }
+    return NULL;
 }
 
 // 在链表头部插入节点
 void insert(link p) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    p->next = head;
+    head = p;
 }
 
 // 删除指定节点
 void delete(link p) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    struct node *current = head;
+    struct node *previous = NULL;
+    while (current != NULL) {
+        if (current == p) {
+            if (previous == NULL) {
+                head = current->next; 
+            } else {
+                previous->next = current->next; 
+            }
+            free_node(current);
+            return;
+        }
+        previous = current;
+        current = current->next;
+    }
 }
 
 // 遍历链表
 void traverse(void (*visit)(link)) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    struct node *p = head;
+    while (p != NULL) {
+        visit(p);
+        p = p->next;
+    }
 }
 
 // 销毁整个链表
 void destroy(void) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    free_list(head);
 }
 
 // 在链表头部推入节点
 void push(link p) { 
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
- }
+    p->next = head;
+    head = p;
+}
 
 // 从链表头部弹出节点
 link pop(void) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (head == NULL) {
+        return NULL;
+    }
+    link top = head;
+    head = head->next;
+    return top;
 }
 
 // 释放链表内存
 void free_list(link list_head) {
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    struct node *p = list_head;
+    while (p != NULL) {
+        struct node *next = p->next;
+        free_node(p);
+        p = next;
+    }
+    head = NULL;
 }
